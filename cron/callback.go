@@ -2,14 +2,15 @@ package cron
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/open-falcon/alarm/api"
 	"github.com/open-falcon/alarm/g"
 	"github.com/open-falcon/alarm/redis"
 	"github.com/open-falcon/common/model"
 	"github.com/open-falcon/common/utils"
 	"github.com/toolkits/net/httplib"
-	"strings"
-	"time"
 )
 
 func HandleCallback(event *model.Event, action *api.Action) {
@@ -76,8 +77,7 @@ func Callback(event *model.Event, action *api.Action) string {
 	req.Param("tags", tags)
 	req.Param("link", g.Link(event))
 	req.Param("msg", event.Note())
-	req.Param("detail", fmt.Sprintf("%s:%s%s%s", event.Func(), \
-		utils.ReadableFloat(event.LeftValue), event.Operator(), utils.ReadableFloat(event.RightValue())))
+	req.Param("detail", fmt.Sprintf("%s:%s%s%s", event.Func(), utils.ReadableFloat(event.LeftValue), event.Operator(), utils.ReadableFloat(event.RightValue())))
 
 	resp, e := req.String()
 
