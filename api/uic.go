@@ -22,6 +22,10 @@ type UsersWrap struct {
 	Users []*User `json:"users"`
 }
 
+type UserMsg struct {
+    User *User  `json:user`
+}
+
 type UsersCache struct {
 	sync.RWMutex
 	M map[string][]*User
@@ -117,4 +121,33 @@ func CurlUic(team string) []*User {
 	}
 
 	return usersWrap.Users
+}
+
+func GenSig() (string, error) {
+    uri := fmt.Sprintf("%s/sso/sig",g.Config().Api.Uic)   
+    req := httplib.Get(uri).SetTimeout(2*time.Second, 10*time.Second)
+    sig,err := req.String()
+    return sig,err   
+}
+
+func LoginUrl(sig string, callback string) string {
+    return fmt.Sprintf("%s/auth/login?sig=%s&callback=%s",g.Config().Api.Uic,sig,callback)
+} 
+
+func UsernameFromSso( sig string ) string {
+    url := fmt.Sprintf("%s/sso/user/%s?token=%s",g.Config().Api.Uic,sig,g.Config().UicToken)
+    req := httplib.Get(url).SetTimeout(2*time.Second, 10*time.Second)
+    var userMsg UserMsg
+    err := req.ToJson( &userMsg )
+    if err != nil {
+        log.Printf("curl %s fail: %v",url,err)
+        return ""
+    }   
+
+    if strings.TrimSpace(userMsg.User.Name) == "" {
+        log.Printf("curl %s return none user!", url)
+        return ""
+    }
+
+    return userMsg.User.Name
 }

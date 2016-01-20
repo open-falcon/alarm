@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/open-falcon/alarm/g"
+    "github.com/open-falcon/alarm/api"
 	"github.com/toolkits/file"
 	"sort"
 	"strings"
+    "log"
 	"time"
 )
 
@@ -40,10 +42,14 @@ func (this *MainController) ConfigReload() {
 func (this *MainController) Index() {
 	events := g.Events.Clone()
 
+    log.Println( "requesturl:",this.Ctx.Input.Request.RequestURI,"request host:",this.Ctx.Input.Request.URL  )
 	defer func() {
 		this.Data["Now"] = time.Now().Unix()
 		this.TplNames = "index.html"
 	}()
+
+    username := getLoginUser( this )
+    this.Data["username"] = username
 
 	if len(events) == 0 {
 		this.Data["Events"] = []*g.EventDto{}
@@ -81,4 +87,29 @@ func (this *MainController) Solve() {
 	}
 
 	this.Ctx.WriteString("")
+}
+
+func getLoginUser( this *MainController ) string {
+    sig := this.Ctx.GetCookie("sig")
+    if strings.TrimSpace( sig ) == "" {
+        redirectToSso( this )
+    }
+    
+    username := api.UsernameFromSso( sig )
+    if username == "" {
+        redirectToSso( this )
+    }
+
+    return username
+}
+
+func redirectToSso( this *MainController ) {
+    sig,err := api.GenSig()
+    if err != nil {
+        log.Println("get sig from uic fail", err)
+        return
+    }
+    this.Ctx.SetCookie("sig",sig)
+    loginurl := api.LoginUrl(sig,this.Ctx.Input.Scheme()+"://"+this.Ctx.Input.Request.Host+this.Ctx.Input.Request.RequestURI)
+    this.Ctx.Redirect(302,loginurl)
 }
