@@ -62,14 +62,12 @@ func (this *MainController) Index() {
 	}
 
 	// 按照持续时间排序
-	beforeOrder := make([]*g.EventDto, count)
-	i := 0
+	beforeOrder := make([]*g.EventDto, 0)
 
     //筛选event，只有属于同一用户team的才可被展示
 	for _, event := range events {
         if checkEventBelongUser( event, username ) {
-            beforeOrder[i] = event
-		    i++
+            beforeOrder = append(beforeOrder,event)
         }
 	}
 
@@ -117,7 +115,7 @@ func redirectToSso( this *MainController ) {
     this.Ctx.Redirect(302,loginurl)
 }
 
-func checkEventBelongUser( e *g.EventDto, user string) bool {
+func checkEventBelongUser( e *g.EventDto, username string) bool {
     //get event action id
     actionId := e.ActionId
 
@@ -125,6 +123,5 @@ func checkEventBelongUser( e *g.EventDto, user string) bool {
     uicTeam := api.GetAction(actionId).Uic
 
     //当前登录user是否为此team成员
-    
-    return true
+    return api.CheckUserInTeam(username,uicTeam)
 }

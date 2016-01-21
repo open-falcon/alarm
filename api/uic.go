@@ -135,19 +135,38 @@ func LoginUrl(sig string, callback string) string {
 } 
 
 func UsernameFromSso( sig string ) string {
-    url := fmt.Sprintf("%s/sso/user/%s?token=%s",g.Config().Api.Uic,sig,g.Config().UicToken)
-    req := httplib.Get(url).SetTimeout(2*time.Second, 10*time.Second)
+    uri := fmt.Sprintf("%s/sso/user/%s?token=%s",g.Config().Api.Uic,sig,g.Config().UicToken)
+    req := httplib.Get(uri).SetTimeout(2*time.Second, 10*time.Second)
     var userMsg UserMsg
     err := req.ToJson( &userMsg )
     if err != nil {
-        log.Printf("curl %s fail: %v",url,err)
+        log.Printf("curl %s fail: %v",uri,err)
         return ""
     }   
 
     if strings.TrimSpace(userMsg.User.Name) == "" {
-        log.Printf("curl %s return none user!", url)
+        log.Printf("curl %s return none user!", uri)
         return ""
     }
 
     return userMsg.User.Name
+}
+
+func CheckUserInTeam( username string, team string ) bool {
+    uri := fmt.Sprintf("%s/user/in",g.Config().Api.Uic)
+    req := httplib.Get(uri).SetTimeout(2*time.Second, 10*time.Second)
+    req.Param("name",username)
+    req.Param("teams",team)
+    checkRes,err := req.String()
+
+    if err != nil {
+		log.Printf("curl %s fail: %v", uri, err)
+		return false
+    }
+
+    if strings.TrimSpace(checkRes) == "1" {
+        return true
+    }
+
+    return false
 }
