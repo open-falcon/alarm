@@ -61,6 +61,11 @@ func popEvent(queues []string) (*model.Event, error) {
 		return nil, err
 	}
 
+	if g.Config().Debug {
+		log.Println("======>>>>redis brpoop:",params)
+		log.Println( reply )
+	}
+
 	var event model.Event
 	err = json.Unmarshal([]byte(reply[1]), &event)
 	if err != nil {

@@ -30,6 +30,7 @@ type EventDto struct {
 	ExpressionId int `json:"expressionId"`
 	StrategyId   int `json:"strategyId"`
 	TemplateId   int `json:"templateId"`
+    ActionId    int `json:"actionId"`
 
 	Link string `json:"link"`
 }
@@ -102,6 +103,7 @@ func (this *SafeEvents) Put(event *model.Event) {
 	dto.ExpressionId = event.ExpressionId()
 	dto.StrategyId = event.StrategyId()
 	dto.TemplateId = event.TplId()
+    dto.ActionId = event.ActionId()
 
 	dto.Link = Link(event)
 
