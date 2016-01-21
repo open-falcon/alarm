@@ -42,7 +42,6 @@ func (this *MainController) ConfigReload() {
 func (this *MainController) Index() {
 	events := g.Events.Clone()
 
-    log.Println( "requesturl:",this.Ctx.Input.Request.RequestURI,"request host:",this.Ctx.Input.Request.URL  )
 	defer func() {
 		this.Data["Now"] = time.Now().Unix()
 		this.TplNames = "index.html"
@@ -65,9 +64,13 @@ func (this *MainController) Index() {
 	// 按照持续时间排序
 	beforeOrder := make([]*g.EventDto, count)
 	i := 0
+
+    //筛选event，只有属于同一用户team的才可被展示
 	for _, event := range events {
-		beforeOrder[i] = event
-		i++
+        if checkEventBelongUser( event, username ) {
+            beforeOrder[i] = event
+		    i++
+        }
 	}
 
 	sort.Sort(g.OrderedEvents(beforeOrder))
@@ -112,4 +115,16 @@ func redirectToSso( this *MainController ) {
     this.Ctx.SetCookie("sig",sig)
     loginurl := api.LoginUrl(sig,this.Ctx.Input.Scheme()+"://"+this.Ctx.Input.Request.Host+this.Ctx.Input.Request.RequestURI)
     this.Ctx.Redirect(302,loginurl)
+}
+
+func checkEventBelongUser( e *g.EventDto, user string) bool {
+    //get event action id
+    actionId := e.ActionId
+
+    //获取event对应的uic team
+    uicTeam := api.GetAction(actionId).Uic
+
+    //当前登录user是否为此team成员
+    
+    return true
 }
