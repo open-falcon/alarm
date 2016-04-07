@@ -54,6 +54,12 @@ func (this OrderedEvents) Less(i, j int) bool {
 
 var Events = &SafeEvents{M: make(map[string]*EventDto)}
 
+func (this *SafeEvents) Init(m map[string]*EventDto) {
+    this.Lock()
+    defer this.Unlock()
+    this.M = m    
+}
+
 func (this *SafeEvents) Delete(id string) {
 	this.Lock()
 	defer this.Unlock()

@@ -29,6 +29,8 @@ func main() {
 
 	g.ParseConfig(*cfg)
 	g.InitRedisConnPool()
+    //初始化，从cache文件中获取event list
+    g.ReadCacheFromFile()
 
 	go http.Start()
 
@@ -38,10 +40,12 @@ func main() {
 	go cron.CombineMail()
 
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	go func() {
 		<-sigs
 		fmt.Println()
+        //将当前的未恢复报警落地到文件
+        g.SaveCacheToFile()
 		g.RedisConnPool.Close()
 		os.Exit(0)
 	}()

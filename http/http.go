@@ -14,6 +14,7 @@ func configRoutes() {
 	beego.Router("/health", &MainController{}, "get:Health")
 	beego.Router("/workdir", &MainController{}, "get:Workdir")
 	beego.Router("/config/reload", &MainController{}, "get:ConfigReload")
+    beego.Router("/eventlist", &MainController{}, "get:EventList")
 	beego.Router("/event/solve", &MainController{}, "post:Solve")
 }
 
@@ -62,9 +63,9 @@ func Start() {
 	}
 
 	if g.Config().Debug {
-		beego.RunMode = "dev"
+	    beego.BConfig.RunMode = "dev"
 	} else {
-		beego.RunMode = "prod"
+		beego.BConfig.RunMode = "prod"
 	}
 
 	beego.Run(addr)

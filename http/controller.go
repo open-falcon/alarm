@@ -24,16 +24,21 @@ func (this *MainController) Health() {
 	this.Ctx.WriteString("ok")
 }
 
+func (this *MainController) EventList() {
+    events := g.Events.Clone()
+    this.Ctx.Output.JSON(events,false,false)    
+}
+
 func (this *MainController) Workdir() {
 	this.Ctx.WriteString(fmt.Sprintf("%s", file.SelfDir()))
 }
 
 func (this *MainController) ConfigReload() {
-	remoteAddr := this.Ctx.Input.Request.RemoteAddr
+    remoteAddr := this.Ctx.Request.RemoteAddr
 	if strings.HasPrefix(remoteAddr, "127.0.0.1") {
 		g.ParseConfig(g.ConfigFile)
 		this.Data["json"] = g.Config()
-		this.ServeJson()
+		this.ServeJSON()
 	} else {
 		this.Ctx.WriteString("no privilege")
 	}
@@ -44,7 +49,7 @@ func (this *MainController) Index() {
 
 	defer func() {
 		this.Data["Now"] = time.Now().Unix()
-		this.TplNames = "index.html"
+		this.TplName = "index.html"
 	}()
 
     username := getLoginUser( this )
@@ -111,7 +116,7 @@ func redirectToSso( this *MainController ) {
         return
     }
     this.Ctx.SetCookie("sig",sig)
-    loginurl := api.LoginUrl(sig,this.Ctx.Input.Scheme()+"://"+this.Ctx.Input.Request.Host+this.Ctx.Input.Request.RequestURI)
+    loginurl := api.LoginUrl(sig,this.Ctx.Input.Scheme()+"://"+this.Ctx.Request.Host+this.Ctx.Request.RequestURI)
     this.Ctx.Redirect(302,loginurl)
 }
 

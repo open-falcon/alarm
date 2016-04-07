@@ -39,6 +39,7 @@ type GlobalConfig struct {
 	Queue    *QueueConfig `json:"queue"`
 	Redis    *RedisConfig `json:"redis"`
 	Api      *ApiConfig   `json:"api"`
+    SaveFile    string      `json:"savefile"`
 }
 
 var (
