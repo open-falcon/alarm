@@ -23,6 +23,11 @@ func (this *MainController) Health() {
 	this.Ctx.WriteString("ok")
 }
 
+func (this *MainController) EventList() {
+        events := g.Events.Clone()
+            this.Ctx.Output.JSON(events,false,false)    
+}
+
 func (this *MainController) Workdir() {
 	this.Ctx.WriteString(fmt.Sprintf("%s", file.SelfDir()))
 }

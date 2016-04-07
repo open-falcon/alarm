@@ -30,6 +30,7 @@ type EventDto struct {
 	ExpressionId int `json:"expressionId"`
 	StrategyId   int `json:"strategyId"`
 	TemplateId   int `json:"templateId"`
+    ActionId    int `json:"actionId"`
 
 	Link string `json:"link"`
 }
@@ -52,6 +53,12 @@ func (this OrderedEvents) Less(i, j int) bool {
 }
 
 var Events = &SafeEvents{M: make(map[string]*EventDto)}
+
+func (this *SafeEvents) Init(m map[string]*EventDto) {
+    this.Lock()
+    defer this.Unlock()
+    this.M = m    
+}
 
 func (this *SafeEvents) Delete(id string) {
 	this.Lock()
@@ -102,6 +109,7 @@ func (this *SafeEvents) Put(event *model.Event) {
 	dto.ExpressionId = event.ExpressionId()
 	dto.StrategyId = event.StrategyId()
 	dto.TemplateId = event.TplId()
+    dto.ActionId = event.ActionId()
 
 	dto.Link = Link(event)
 
