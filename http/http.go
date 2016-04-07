@@ -2,11 +2,10 @@ package http
 
 import (
 	"fmt"
-	"log"
-	_ "net/http/pprof"
-
 	"github.com/astaxie/beego"
 	"github.com/open-falcon/alarm/g"
+	"log"
+	_ "net/http/pprof"
 )
 
 func configRoutes() {
@@ -15,6 +14,7 @@ func configRoutes() {
 	beego.Router("/health", &MainController{}, "get:Health")
 	beego.Router("/workdir", &MainController{}, "get:Workdir")
 	beego.Router("/config/reload", &MainController{}, "get:ConfigReload")
+    beego.Router("/eventlist", &MainController{}, "get:EventList")
 	beego.Router("/event/solve", &MainController{}, "post:Solve")
 }
 

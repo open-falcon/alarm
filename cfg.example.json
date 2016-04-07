@@ -26,6 +26,7 @@
         "userSmsQueue": "/queue/user/sms",
         "userMailQueue": "/queue/user/mail"
     },
+    "savefile":"/tmp/alarm.cache.file",
     "api": {
         "portal": "http://falcon.example.com",
         "uic": "http://uic.example.com",
