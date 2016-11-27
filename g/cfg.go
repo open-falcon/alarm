@@ -39,6 +39,8 @@ type GlobalConfig struct {
 	Queue    *QueueConfig `json:"queue"`
 	Redis    *RedisConfig `json:"redis"`
 	Api      *ApiConfig   `json:"api"`
+	Database string       `json:"database"`
+	MaxIdle  int          `json:"maxIdle"`
 }
 
 var (

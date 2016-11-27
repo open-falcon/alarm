@@ -59,6 +59,12 @@ func (this *SafeEvents) Delete(id string) {
 	delete(this.M, id)
 }
 
+func (this *SafeEvents) Get(id string) *EventDto {
+	this.Lock()
+	defer this.Unlock()
+	return this.M[id]
+}
+
 func (this *SafeEvents) Len() int {
 	this.RLock()
 	defer this.RUnlock()

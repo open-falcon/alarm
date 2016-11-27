@@ -26,6 +26,8 @@
         "userSmsQueue": "/queue/user/sms",
         "userMailQueue": "/queue/user/mail"
     },
+	"database": "root:@tcp(127.0.0.1:3306)/alarm?loc=Local&parseTime=true",
+	"maxIdle": 100,
     "api": {
         "portal": "http://falcon.example.com",
         "uic": "http://uic.example.com",

@@ -8,6 +8,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/open-falcon/alarm/g"
+	"github.com/open-falcon/alarm/db"
 	"github.com/toolkits/file"
 )
 
@@ -73,6 +74,11 @@ func (this *MainController) Solve() {
 
 	idArr := strings.Split(ids, ",,")
 	for i := 0; i < len(idArr); i++ {
+		event := g.Events.Get(idArr[i])
+		if event != nil {
+			db.MarkSolvedEvent(event)
+			db.MarkSolvedAlert(idArr[i])
+		}
 		g.Events.Delete(idArr[i])
 	}
 

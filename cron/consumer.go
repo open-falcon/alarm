@@ -6,6 +6,7 @@ import (
 	"github.com/open-falcon/alarm/g"
 	"github.com/open-falcon/alarm/redis"
 	"github.com/open-falcon/common/model"
+	"github.com/open-falcon/alarm/db"
 	"log"
 )
 
@@ -18,6 +19,14 @@ func consume(event *model.Event, isHigh bool) {
 	action := api.GetAction(actionId)
 	if action == nil {
 		return
+	}
+
+	// save event in db
+	db.AddEvent(event, action)
+	if event.Status == "PROBLEM" {
+		db.AddAlert(event, action)
+	} else if event.Status == "OK" {
+		db.UpdateAlert(event, action)
 	}
 
 	if action.Callback == 1 {
