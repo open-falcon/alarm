@@ -57,7 +57,7 @@ func popEvent(queues []string) (*model.Event, error) {
 
 	reply, err := redis.Strings(rc.Do("BRPOP", params...))
 	if err != nil {
-		log.Printf("get alarm event from redis fail: %v", err)
+		log.Printf("get alarm event from redis fail: %v, %v", err, params)
 		return nil, err
 	}
 
